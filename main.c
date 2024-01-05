@@ -127,12 +127,10 @@ const int button_sound_map[8] = {CAT1, COW1, DOG1, GOAT1, HEN1, ROOSTER1, SNAKE1
 // GPIO numbers
 const uint button_gpio[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 
-#define SINE_WAVE_TABLE_LEN 2048
 #define SAMPLES_PER_BUFFER 256
 
 // ******** global variables ********
 uint8_t last_button_state = 0;
-static int16_t sine_wave_table[SINE_WAVE_TABLE_LEN];
 // the voice_sound_index array stores a value from 0 to 20, which is the sound array index
 // a value of -1 means the voice is not playing.
 int voice_sound_index[NUM_VOICES];
@@ -236,15 +234,8 @@ int main() {
     stdio_init_all();
     board_init();
 
-    for (int i = 0; i < SINE_WAVE_TABLE_LEN; i++) {
-        sine_wave_table[i] = 32767 * cosf(i * 2 * (float) (M_PI / SINE_WAVE_TABLE_LEN));
-    }
-
     struct audio_buffer_pool *ap = init_audio();
-    uint32_t step = 0x200000;
-    uint32_t pos = 0;
-    uint32_t pos_max = 0x10000 * SINE_WAVE_TABLE_LEN;
-    uint vol = 128;
+    
     while (true) { // forever loop
 #if USE_AUDIO_PWM
         enum audio_correction_mode m = audio_pwm_get_correction_mode();
